@@ -1,0 +1,32 @@
+pragma solidity ^0.8.7;
+
+import "hardhat/console.sol";
+
+contract Multipay {
+
+    address admin;
+    
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    struct User{
+        address payable UserAddress;
+        uint fee; 
+    }    
+
+
+    function Pay_Users(User[] calldata _List) external {
+
+        User[] memory Payee_list = new User[](_List.length);
+        
+        for(uint i = 0; i < _List.length; i++) {
+            Payee_list[i]=_List[i];
+        //    Payee_list[i][0].transfer(Payee_list[i][1]*985/1000);
+        console.log(_List[i])
+        }
+
+    }
+
+}
