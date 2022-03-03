@@ -19,18 +19,16 @@ contract Multipay {
 
     function Pay_Users(User[] calldata _List) external {
 
-        User[] memory Payee_list = new User[](_List.length);
+        User memory Payee;
         
         for(uint i = 0; i < _List.length; i++) {
-            Payee_list[i]=_List[i];
-        //    Payee_list[i][0].transfer(Payee_list[i][1]*985/1000);
-        console.log(_List[i])
+            Payee=_List[i];
+            Payee.UserAddress.transfer(Payee.fee*1000/1000);
         }
 
     }
 
 }
-
 
 [
   ["0x0000000000000000000000000000000000000001",1234], 
