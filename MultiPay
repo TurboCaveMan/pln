@@ -1,10 +1,23 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
+
+import "./PLN_Token.sol";
 
 contract Multipay {
 
-    address payable admin;
+    address payable public admin;
+    address public PLN_address;
 
-    constructor() public {
+    function setPLNaddress(address _address_PLN) external{
+        PLN_address = _address_PLN;
+    }
+
+    function callmint(address _toAddress, uint amount) internal {
+        PLN_Token Token = PLN_Token(PLN_address);
+        Token.mint(_toAddress, amount);
+    }
+
+    constructor() {
         admin = payable(msg.sender);
     }
 
@@ -22,22 +35,29 @@ contract Multipay {
         
         for(uint i = 0; i < _List.length; i++) {
             Payee=_List[i];
-            _fee = Payee.fee * 1 ether * 750 / 1000;
+            _fee = Payee.fee * 1 ether * 985 / 1000;
 
             Payee.UserAddress.transfer(_fee);
             _paid = _paid + (Payee.fee * 1 ether);
             _totalfee = _totalfee + _fee;
+
+            callmint(Payee.UserAddress, 10**18);
         }
+
 
         if(msg.value < _paid) {
             revert();
         }
 
         admin.transfer(_paid-_totalfee);
+        callmint(admin, 10**17);
+
 
     }
 
 }
+
+
 //[
 //  ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","1"], 
 //  ["0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db","1"]
