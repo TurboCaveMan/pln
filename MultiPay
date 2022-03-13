@@ -7,9 +7,29 @@ contract Multipay {
 
     address payable public admin;
     address public PLN_address;
+    uint amount_to_mint;
+    uint public constant duration = 3650 days;
+    uint public immutable end;
+
+    constructor() {
+        admin = payable(msg.sender);
+        amount_to_mint = 1000 ether;
+        end = block.timestamp + duration;
+    }
+
+    struct User{
+        address payable UserAddress;
+        uint fee; 
+    }  
 
     function setPLNaddress(address _address_PLN) external{
+        require(msg.sender == admin);
         PLN_address = _address_PLN;
+    }
+
+    function setAdmin(address payable _NewAdmin) external{
+        require(msg.sender == admin);
+        admin = _NewAdmin;
     }
 
     function callmint(address _toAddress, uint amount) internal {
@@ -17,15 +37,19 @@ contract Multipay {
         Token.mint(_toAddress, amount);
     }
 
-    constructor() {
-        admin = payable(msg.sender);
+    function set_amount_to_mint(uint _newAmount) external{
+        require(msg.sender == admin);
+
+        if(block.timestamp <= end){
+            require(_newAmount < amount_to_mint);
+            amount_to_mint = _newAmount * 1 ether;
+
+        } else {
+            require(_newAmount < amount_to_mint*110/100);
+            require(_newAmount > amount_to_mint);            
+            amount_to_mint = _newAmount * 1 ether;
+        }
     }
-
-    struct User{
-        address payable UserAddress;
-        uint fee; 
-    }    
-
 
     function Pay_Users(User[] calldata _List) external payable {
         uint _paid = 0;
@@ -41,17 +65,16 @@ contract Multipay {
             _paid = _paid + (Payee.fee * 1 ether);
             _totalfee = _totalfee + _fee;
 
-            callmint(Payee.UserAddress, 10**18);
+            callmint(Payee.UserAddress, amount_to_mint);
         }
-
 
         if(msg.value < _paid) {
             revert();
         }
 
         admin.transfer(_paid-_totalfee);
-        callmint(admin, 10**17);
-
+        callmint(admin, amount_to_mint);
+        callmint(msg.sender, amount_to_mint);
 
     }
 
