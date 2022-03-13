@@ -7,9 +7,9 @@ contract Multipay {
 
     address payable public admin;
     address public PLN_address;
-    uint amount_to_mint;
+    uint public amount_to_mint;
     uint public constant duration = 3650 days;
-    uint public immutable end;
+    uint public end;
 
     constructor() {
         admin = payable(msg.sender);
@@ -41,13 +41,14 @@ contract Multipay {
         require(msg.sender == admin);
 
         if(block.timestamp <= end){
-            require(_newAmount < amount_to_mint);
+            require(_newAmount * 1 ether < amount_to_mint);
             amount_to_mint = _newAmount * 1 ether;
 
         } else {
-            require(_newAmount < amount_to_mint*110/100);
-            require(_newAmount > amount_to_mint);            
+            require(_newAmount * 1 ether < amount_to_mint*110/100);
+            require(_newAmount * 1 ether > amount_to_mint);            
             amount_to_mint = _newAmount * 1 ether;
+            end = end + 365 days;
         }
     }
 
@@ -80,8 +81,10 @@ contract Multipay {
 
 }
 
+*/
+[
+  ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","1"], 
+  ["0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db","2"]
+]
+*/
 
-//[
-//  ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","1"], 
-//  ["0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db","1"]
-//]
