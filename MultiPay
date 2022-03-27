@@ -11,6 +11,7 @@ contract Multipay {
     uint public constant duration = 3650 days;
     uint public end;
     uint public turning;
+    uint public approved;
 
     constructor() {
         admin = payable(msg.sender);
@@ -34,9 +35,15 @@ contract Multipay {
         admin = _NewAdmin;
     }
 
-    function callmint(address _toAddress, uint amount) internal {
+    function callmint(address _toAddress, uint amount) private {
         Plnning Token = Plnning(PLN_address);
         Token.mint(_toAddress, amount);
+    }
+
+    function changetokenowner(address _NewTokenOwner) external{
+        require(msg.sender == admin);
+        Plnning Token = Plnning(PLN_address);
+        Token.transferOwnership(_NewTokenOwner);
     }
 
     function set_amount_to_mint(uint _newAmount) external{
@@ -56,19 +63,19 @@ contract Multipay {
     }
 
     function Pay_Users(User[] calldata _List) external payable {
+
         uint _paid = 0;
         uint _totalfee = 0;
         uint _fee;
         User memory Payee;
         
         for(uint i = 0; i < _List.length; i++) {
-            Payee=_List[i];
+            Payee = _List[i];
             _fee = Payee.fee * 1 ether * 985 / 1000;
-
-            Payee.UserAddress.transfer(_fee);
             _paid = _paid + (Payee.fee * 1 ether);
             _totalfee = _totalfee + _fee;
 
+            Payee.UserAddress.transfer(_fee);
             callmint(Payee.UserAddress, amount_to_mint);
         }
 
