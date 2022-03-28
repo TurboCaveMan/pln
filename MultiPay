@@ -6,18 +6,20 @@ import "./PLN_Token.sol";
 contract Multipay {
 
     address payable public admin;
+    address payable public vault;
+
     address public PLN_address;
     uint public amount_to_mint;
+
     uint public constant duration = 3650 days;
-    uint public end;
-    uint public turning;
-    uint public approved;
+    uint public First_Era;
+    uint public InflationInterval;
 
     constructor() {
         admin = payable(msg.sender);
-        amount_to_mint = 1000 ether;
-        end = block.timestamp + duration;
-        turning = block.timestamp + duration;
+        amount_to_mint = 10000000 ether;
+        First_Era = block.timestamp + duration;
+        InflationInterval = block.timestamp + duration;
     }
 
     struct User{
@@ -25,19 +27,23 @@ contract Multipay {
         uint fee; 
     }  
 
+//need to set these after constructor called
+
     function setPLNaddress(address _address_PLN) external{
         require(msg.sender == admin);
         PLN_address = _address_PLN;
     }
 
+    function setVault(address payable _NewVault) external{
+        require(msg.sender == admin);
+        vault = _NewVault;
+    }        
+
+// for future upgrades
+
     function setAdmin(address payable _NewAdmin) external{
         require(msg.sender == admin);
         admin = _NewAdmin;
-    }
-
-    function callmint(address _toAddress, uint amount) private {
-        Plnning Token = Plnning(PLN_address);
-        Token.mint(_toAddress, amount);
     }
 
     function changetokenowner(address _NewTokenOwner) external{
@@ -46,55 +52,54 @@ contract Multipay {
         Token.transferOwnership(_NewTokenOwner);
     }
 
+// mint more PLN tokens
+
+    function callmint(address _toAddress, uint amount) private {
+        Plnning Token = Plnning(PLN_address);
+        Token.mint(_toAddress, amount);
+    }
+
     function set_amount_to_mint(uint _newAmount) external{
         require(msg.sender == admin);
 
-        if(block.timestamp <= end){
+        if(block.timestamp <= First_Era){
             require(_newAmount * 1 ether < amount_to_mint);
             amount_to_mint = _newAmount * 1 ether;
 
         } else {
             require(_newAmount * 1 ether < amount_to_mint*110/100);
             require(_newAmount * 1 ether > amount_to_mint);
-            require(block.timestamp > turning);            
+            require(block.timestamp > InflationInterval);            
             amount_to_mint = _newAmount * 1 ether;
-            turning = turning + 365 days;
+            InflationInterval = InflationInterval + 365 days;
         }
     }
 
     function Pay_Users(User[] calldata _List) external payable {
+        require(msg.sender == admin);
 
-        uint _paid = 0;
-        uint _totalfee = 0;
         uint _fee;
+        uint _totalfee = 0;
+        uint _totalpaid = 0;
+
         User memory Payee;
         
         for(uint i = 0; i < _List.length; i++) {
             Payee = _List[i];
             _fee = Payee.fee * 1 ether * 985 / 1000;
-            _paid = _paid + (Payee.fee * 1 ether);
+            _totalpaid = _totalpaid + (Payee.fee * 1 ether);
             _totalfee = _totalfee + _fee;
 
             Payee.UserAddress.transfer(_fee);
             callmint(Payee.UserAddress, amount_to_mint);
         }
 
-        if(msg.value < _paid) {
+        if(msg.value < _totalpaid) {
             revert();
         }
 
-        admin.transfer(_paid-_totalfee);
-        callmint(admin, amount_to_mint);
-        callmint(msg.sender, amount_to_mint);
-
+        vault.transfer(_totalpaid-_totalfee);
+        callmint(vault, amount_to_mint);
+ //       callmint(msg.sender, amount_to_mint);
     }
-
 }
-
-*/
-[
-  ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","1"], 
-  ["0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db","2"]
-]
-*/
-
