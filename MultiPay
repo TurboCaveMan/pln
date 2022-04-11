@@ -7,6 +7,7 @@ contract Multipay {
 
     address payable public admin;
     address payable public vault;
+    address payable public minter;
 
     address public PLN_address;
     uint public amount_to_mint;
@@ -14,12 +15,14 @@ contract Multipay {
     uint public constant duration = 3650 days;
     uint public First_Era;
     uint public InflationInterval;
+    uint public process_fee;
 
     constructor() {
         admin = payable(msg.sender);
-        amount_to_mint = 10000000 ether;
+        amount_to_mint = 950000000 ether;
         First_Era = block.timestamp + duration;
         InflationInterval = block.timestamp + duration;
+        process_fee = 950;
     }
 
     struct User{
@@ -37,13 +40,23 @@ contract Multipay {
     function setVault(address payable _NewVault) external{
         require(msg.sender == admin);
         vault = _NewVault;
-    }        
+    }
+
+    function setMinter(address payable _NewMinter) external{
+        require(msg.sender == admin);
+        minter = _NewMinter;
+    }           
 
 // for future upgrades
 
     function setAdmin(address payable _NewAdmin) external{
         require(msg.sender == admin);
         admin = _NewAdmin;
+    }
+
+    function setProcessFee(uint _NewProcessFee) external{
+        require(msg.sender == admin);
+        process_fee = _NewProcessFee;
     }
 
     function changetokenowner(address _NewTokenOwner) external{
@@ -76,7 +89,7 @@ contract Multipay {
     }
 
     function Pay_Users(User[] calldata _List) external payable {
-        require(msg.sender == admin);
+        require(msg.sender == minter);
 
         uint _fee;
         uint _totalfee = 0;
@@ -86,7 +99,7 @@ contract Multipay {
         
         for(uint i = 0; i < _List.length; i++) {
             Payee = _List[i];
-            _fee = Payee.fee * 1 ether * 985 / 1000;
+            _fee = Payee.fee * 1 ether * process_fee / 1000;
             _totalpaid = _totalpaid + (Payee.fee * 1 ether);
             _totalfee = _totalfee + _fee;
 
@@ -100,6 +113,5 @@ contract Multipay {
 
         vault.transfer(_totalpaid-_totalfee);
         callmint(vault, amount_to_mint);
- //       callmint(msg.sender, amount_to_mint);
     }
 }
