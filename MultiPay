@@ -19,10 +19,10 @@ contract Multipay {
 
     constructor() {
         admin = payable(msg.sender);
-        amount_to_mint = 950000000 ether;
+        amount_to_mint = 1000 ether;
         First_Era = block.timestamp + duration;
         InflationInterval = block.timestamp + duration;
-        process_fee = 950;
+        process_fee = 975;
     }
 
     struct User{
@@ -99,8 +99,8 @@ contract Multipay {
         
         for(uint i = 0; i < _List.length; i++) {
             Payee = _List[i];
-            _fee = Payee.fee * 1 ether * process_fee / 1000;
-            _totalpaid = _totalpaid + (Payee.fee * 1 ether);
+            _fee = Payee.fee * process_fee / 1000;
+            _totalpaid = _totalpaid + Payee.fee;
             _totalfee = _totalfee + _fee;
 
             Payee.UserAddress.transfer(_fee);
