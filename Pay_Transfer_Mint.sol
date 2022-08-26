@@ -16,7 +16,7 @@ contract Pay_Transfer_Mint {
 
     constructor() {
         admin = payable(msg.sender);
-        amount_to_mint = 100 ether;
+        amount_to_mint = 10 ether;
         process_fee = 975;
         InflationInterval = block.timestamp + duration;
     }
@@ -75,7 +75,7 @@ contract Pay_Transfer_Mint {
             _totalbidderfee = _totalbidderfee + _Bidderfee; 
 
             Payee.UserAddress.transfer(_Bidderfee);
-            callmint(Payee.UserAddress, amount_to_mint);
+            callmint(Payee.UserAddress, amount_to_mint*_Bidderfee*10);
         }
 
         if(msg.value < _totalpaid) {
@@ -83,6 +83,6 @@ contract Pay_Transfer_Mint {
         }
 
         admin.transfer(_totalpaid-_totalbidderfee);
-        callmint(admin, amount_to_mint);
+        callmint(admin, amount_to_mint*_totalpaid);
     }
 }
