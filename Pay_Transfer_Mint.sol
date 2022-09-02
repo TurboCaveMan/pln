@@ -16,7 +16,7 @@ contract Pay_Transfer_Mint {
 
     constructor() {
         admin = payable(msg.sender);
-        amount_to_mint = 10 ether;
+        amount_to_mint = 10;
         process_fee = 975;
         InflationInterval = block.timestamp + duration;
     }
@@ -26,6 +26,12 @@ contract Pay_Transfer_Mint {
     function setPLNaddress(address _address_PLN) external{
         require(msg.sender == admin);
         PLN_address = _address_PLN;
+    }
+
+    function changetokenowner(address _NewTokenOwner) external{
+        require(msg.sender == admin);
+        Plnning Token = Plnning(PLN_address);
+        Token.transferOwnership(_NewTokenOwner);
     }
 
     function callmint(address _toAddress, uint amount) private {
@@ -75,7 +81,7 @@ contract Pay_Transfer_Mint {
             _totalbidderfee = _totalbidderfee + _Bidderfee; 
 
             Payee.UserAddress.transfer(_Bidderfee);
-            callmint(Payee.UserAddress, amount_to_mint*_Bidderfee*10);
+            callmint(Payee.UserAddress, amount_to_mint*Payee.Bidfee*9);
         }
 
         if(msg.value < _totalpaid) {
