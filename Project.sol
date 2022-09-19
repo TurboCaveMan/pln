@@ -12,7 +12,7 @@ contract Project {
         string Description;
     }
 
-    User_Project[] User_Projects;
+    User_Project[] public User_Projects;
 
     function create_project(User_Project calldata _Project_Info) external {
         User_Project memory New_Project;
