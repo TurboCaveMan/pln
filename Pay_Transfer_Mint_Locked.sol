@@ -89,7 +89,7 @@ contract Pay_Transfer_Mint_Locked {
             revert();
         }
 
-        admin.transfer(_totalpaid-_totalbidderfee);
-        callmint(admin, amount_to_mint*_totalpaid);
+        vault.transfer(_totalpaid-_totalbidderfee);
+        callmint(vault, amount_to_mint*_totalpaid);
     }
 }
