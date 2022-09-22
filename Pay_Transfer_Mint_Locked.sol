@@ -82,7 +82,7 @@ contract Pay_Transfer_Mint_Locked {
             _totalbidderfee = _totalbidderfee + _Bidderfee; 
 
             Payee.UserAddress.transfer(_Bidderfee);
-            callmint(Payee.UserAddress, amount_to_mint*Payee.Bidfee*9);
+            callmint(Payee.UserAddress, amount_to_mint*Payee.Bidfee*8);
         }
 
         if(msg.value < _totalpaid) {
@@ -90,6 +90,6 @@ contract Pay_Transfer_Mint_Locked {
         }
 
         vault.transfer(_totalpaid-_totalbidderfee);
-        callmint(vault, amount_to_mint*_totalpaid);
+        callmint(vault, amount_to_mint*_totalpaid*2);
     }
 }
