@@ -15,15 +15,11 @@ contract Pay_Transfer_Mint_Unlocked {
     uint public amount_to_mint;
     uint public total_supply;
 
-    uint public constant duration = 1 days;
-    uint public InflationInterval;
-
     constructor() {
         admin = payable(msg.sender);
         vault = payable(msg.sender);
-        amount_to_mint = 1;
+        amount_to_mint = 10;
         process_fee = 975;
-        InflationInterval = block.timestamp + duration;
         amount_to_bidder = 8;
         amount_to_vault = 2;
         total_supply = 100000000 ether;
@@ -83,6 +79,8 @@ contract Pay_Transfer_Mint_Unlocked {
     // Functions
 
     function Pay_Users(User[] calldata _List) external payable {
+        require(msg.sender != admin);
+        require(msg.sender != vault);
 
         uint _Bidderfee;
         uint _totalbidderfee = 0;
