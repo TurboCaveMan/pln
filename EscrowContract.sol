@@ -25,7 +25,7 @@ contract EscrowContract {
         _;
     }
     
-    constructor(address payable _buyer, address payable _seller, address payable _arbitrator) {
+    constructor(address payable _buyer, address payable _seller, address payable _arbitrator) payable {
         buyer = _buyer;
         seller = _seller;
         arbitrator = _arbitrator;
