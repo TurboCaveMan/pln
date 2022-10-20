@@ -79,9 +79,9 @@ contract Transfer {
     }
 
     // Functions
-    function Create_Escrow (address payable Paying, address payable Payee, address payable arbitrator) returns(payable address) {
-        EscrowContract escrow = new EscrowContract(Paying,  Payee, arbitrator);
-        return address(escrow);
+    function Create_Escrow (address payable _Paying, address payable _Payee, address payable _arbitrator) public payable returns(address) {
+        EscrowContract escrow = new EscrowContract(_Paying,  _Payee, _arbitrator);
+        return payable(address(escrow));
     } 
 
 
@@ -103,7 +103,7 @@ contract Transfer {
             _Bidderfee = Payee.Bidfee * process_fee / 1000;
             _totalbidderfee = _totalbidderfee + _Bidderfee; 
 
-            Escrow_Contract_Address = Create_Escrow(msg.sender, Payee.UserAddress, Payee.arbitrator);
+            Escrow_Contract_Address = payable(Create_Escrow(payable(msg.sender), Payee.UserAddress, Payee.arbitrator));
 
             Escrow_Contract_Address.transfer(_Bidderfee);
 //            callmint(Payee.UserAddress, amount_to_mint*Payee.Bidfee*amount_to_bidder);
